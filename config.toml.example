@@ -1,0 +1,8 @@
+# A sample config file for the slack logger.
+# This should be copied to config.toml before running.
+
+[slack-quoter]
+api_token = "..."  # Replace with your bot's API token.
+loader_api_token = "..."  # Replace with an API token for a real user.
+channel_key = "..."  # The channel to listen for commands in.
+mongodb_server = "..."
