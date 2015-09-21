@@ -37,6 +37,8 @@ func main() {
     var info slack.Info
     quothPattern := regexp.MustCompile(`^(?i:quoth(?:\s+(\S+))?)`)
     deletePattern := regexp.MustCompile(`^(?i:forget ([A-Za-z0-9]{24}))`)
+    bracketRemovalPattern := regexp.MustCompile(`<(.*?)>`)
+
     rand.Seed(time.Now().UnixNano())
     // Read config.toml
     config, err := toml.LoadFile("config.toml")
@@ -123,7 +125,8 @@ Loop:
                     } else {
                         name = "UNKNOWN"
                     }
-                    api.PostMessage(channelKey, fmt.Sprintf("Quoth %s:\t\t\t\t\t\t(%s)\n%s", name, quote.Id.Hex(), quote.Text), postMessageParams)
+                    quoteText := bracketRemovalPattern.ReplaceAllString(quote.Text, "$1")
+                    api.PostMessage(channelKey, fmt.Sprintf("Quoth %s:\t\t\t\t\t\t(%s)\n%s", name, quote.Id.Hex(), quoteText), postMessageParams)
                 } else if matches := deletePattern.FindStringSubmatch(ev.Text); matches != nil {
                     err := col.RemoveId(bson.ObjectIdHex(matches[1]))
                     if err == mgo.ErrNotFound {
